@@ -17,7 +17,7 @@ import {
   Moon,
   Sun,
   FileCode,
-
+FileText
 } from 'lucide-react';
 
 const MarkdownEditor = () => {
@@ -285,7 +285,7 @@ const MarkdownEditor = () => {
             size="icon"
             onClick={() => exportDocument('pdf')}
           >
-pdf
+<FileText />
           </Button>
           <Button 
             variant="outline" 
