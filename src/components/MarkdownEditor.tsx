@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, ChangeEvent } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -17,16 +17,15 @@ import {
   Moon,
   Sun,
   FileCode,
-FileText
+  FileText
 } from 'lucide-react';
 
-const MarkdownEditor = () => {
-  const [markdown, setMarkdown] = useState('# Welcome to the Enhanced Markdown Editor\n\nStart typing to see the preview!\n\n## Features:\n- [x] Tables\n- [x] Task Lists\n- [x] Dark Mode\n- [x] Multiple Export Formats\n\n### Example Table:\n| Header 1 | Header 2 |\n|----------|----------|\n| Cell 1   | Cell 2   |');
-  const [preview, setPreview] = useState('');
-  const [isDarkMode, setIsDarkMode] = useState(false);
+const MarkdownEditor: React.FC = () => {
+  const [markdown, setMarkdown] = useState<string>('# Welcome to the Enhanced Markdown Editor\n\nStart typing to see the preview!\n\n## Features:\n- [x] Tables\n- [x] Task Lists\n- [x] Dark Mode\n- [x] Multiple Export Formats\n\n### Example Table:\n| Header 1 | Header 2 |\n|----------|----------|\n| Cell 1   | Cell 2   |');
+  const [preview, setPreview] = useState<string>('');
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
-
-  const convertToHtml = useCallback((text) => {
+  const convertToHtml = useCallback((text: string): string => {
     // Headers
     text = text.replace(/^# (.*$)/gm, '<h1>$1</h1>');
     text = text.replace(/^## (.*$)/gm, '<h2>$1</h2>');
@@ -48,8 +47,8 @@ const MarkdownEditor = () => {
     
     // Tables
     text = text.replace(/^\|(.+)\|$/gm, (match, content) => {
-      const cells = content.split('|').map(cell => cell.trim());
-      return `<tr>${cells.map(cell => {
+      const cells = content.split('|').map((cell: string) => cell.trim());
+      return `<tr>${cells.map((cell: string) => {
         if (cell.match(/^[-:]+$/)) {
           return ''; // Skip separator row
         }
@@ -87,17 +86,18 @@ const MarkdownEditor = () => {
     // Paragraphs
     text = text.replace(/\n\n/g, '</p><p>');
     
-    return `<div class="prose dark:prose-invert""><p>${text}</p></div>`;
+    return `<div class="prose dark:prose-invert"><p>${text}</p></div>`;
   }, []);
 
-  const handleTextChange = (e) => {
+  const handleTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
     setMarkdown(newText);
     setPreview(convertToHtml(newText));
   };
 
-  const insertMarkdown = (tag) => {
+  const insertMarkdown = (tag: string) => {
     const textarea = document.querySelector('textarea');
+    if (!textarea) return;
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const text = textarea.value;
@@ -140,7 +140,7 @@ const MarkdownEditor = () => {
     setPreview(convertToHtml(newText));
   };
 
-  const exportDocument = (format) => {
+  const exportDocument = (format: string) => {
     switch (format) {
       case 'markdown':
         const mdBlob = new Blob([markdown], { type: 'text/markdown' });
@@ -169,7 +169,7 @@ const MarkdownEditor = () => {
     }
   };
 
-  const downloadFile = (blob, filename) => {
+  const downloadFile = (blob: Blob, filename: string) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -178,12 +178,12 @@ const MarkdownEditor = () => {
     URL.revokeObjectURL(url);
   };
 
-  const importMarkdown = (e) => {
-    const file = e.target.files[0];
+  const importMarkdown = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        const text = e.target.result;
+        const text = e.target?.result as string;
         setMarkdown(text);
         setPreview(convertToHtml(text));
       };
@@ -285,7 +285,7 @@ const MarkdownEditor = () => {
             size="icon"
             onClick={() => exportDocument('pdf')}
           >
-<FileText />
+            <FileText className="h-4 w-4" />
           </Button>
           <Button 
             variant="outline" 

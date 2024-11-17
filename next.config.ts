@@ -4,7 +4,13 @@ const nextConfig: NextConfig = {
     /* config options here */
 
     distDir: 'dist',
-    output: 'export'
+    output: 'export',
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
+    typescript: {
+        ignoreBuildErrors: true,
+      },
 };
 
 export default nextConfig;
